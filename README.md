@@ -1,5 +1,3 @@
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -21,7 +19,7 @@
     h1 { margin: 0 0 0.5rem; font-weight: 700; font-size: 1.5rem; }
     .sub { color: #94a3b8; margin-bottom: 1rem; }
     .riddle {
-      white-space: pre-line;
+      white-space: pre-line; /* preserve line breaks */
       background: #0b1020; border: 1px solid #1f2937; border-radius: 10px;
       padding: 1rem; line-height: 1.6; margin-bottom: 1rem; color: #cbd5e1;
     }
@@ -45,8 +43,8 @@
     /* === Modal (pop-up) styles === */
     .modal-backdrop {
       position: fixed; inset: 0;
-      background: rgba(2,6,23,0.65); /* dark translucent */
-      display: none;
+      background: rgba(2,6,23,0.65);
+      display: none; /* hidden by default */
       align-items: center; justify-content: center;
       z-index: 1000;
     }
@@ -54,8 +52,7 @@
       width: min(92vw, 560px);
       background: #111827; border: 1px solid #1f2937; border-radius: 12px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.45);
-      padding: 1.25rem;
-      color: #e2e8f0;
+      padding: 1.25rem; color: #e2e8f0;
     }
     .modal header {
       display: flex; justify-content: space-between; align-items: center;
@@ -64,17 +61,15 @@
     .modal h2 { margin: 0; font-size: 1.25rem; }
     .close-btn {
       background: transparent; border: none; color: #94a3b8; cursor: pointer;
-      font-size: 1.25rem; line-height: 1; padding: 0.25rem 0.5rem; border-radius: 8px;
+      font-size: 1.1rem; line-height: 1; padding: 0.25rem 0.5rem; border-radius: 8px;
     }
     .close-btn:hover { color: #e2e8f0; background: #0b1020; }
     .modal .content { line-height: 1.6; }
-    .modal .address {
-      margin-top: 0.5rem; font-weight: 700; color: #86efac;
-    }
-    .modal footer {
-      margin-top: 1rem; text-align: right;
-    }
-    .modal-show { display: flex; }
+    .modal .address { margin-top: 0.5rem; font-weight: 700; color: #86efac; }
+    .modal footer { margin-top: 1rem; text-align: right; }
+
+    /* class that shows the modal */
+    .show { display: flex; }
   </style>
 </head>
 <body>
@@ -128,35 +123,31 @@ From roaring twenties to icy snow?
     </div>
   </div>
 
+  <!-- Place script at end so DOM is ready -->
   <script>
-    // === Configuration ===
+    // === Config ===
     const ACCEPTED_ANSWERS = [
-      // Primary full name
       "leonardo dicaprio",
-      // Common variants
       "leo dicaprio",
       "leonardo wilhelm dicaprio",
       "dicaprio",
       "leonardo",
-      // With punctuation variants (normalized away)
       "leonardo di caprio"
     ];
     const HINTS = [
-      "Hint #1: Think of a green light across the bay in the Roaring Twenties.",
-      "Hint #2: He froze in icy waters and fought through brutal wilderness.",
-      "Hint #3: His first name matches a Renaissance painter."
+      "Hint #1: Green light across the bay in the Roaring Twenties.",
+      "Hint #2: Titanic’s icy waters & The Revenant’s wilderness.",
+      "Hint #3: Shares a name with a Renaissance painter."
     ];
-    const HINT_AFTER_ATTEMPTS = 3; // show hints after this many wrong tries
-
-    // 🏁 Replace this with your real address
-    const ADDRESS_TEXT = "123 Example Street, Maddington WA 6109";
+    const HINT_AFTER_ATTEMPTS = 3;
+    const ADDRESS_TEXT = "123 Example Street, Maddington WA 6109"; // <- change this
 
     // === Elements ===
     const answerInput = document.getElementById('answer');
-    const submitBtn  = document.getElementById('submitBtn');
-    const feedback   = document.getElementById('feedback');
-    const hintBox    = document.getElementById('hint');
-    const attemptsEl = document.getElementById('attempts');
+    const submitBtn   = document.getElementById('submitBtn');
+    const feedback    = document.getElementById('feedback');
+    const hintBox     = document.getElementById('hint');
+    const attemptsEl  = document.getElementById('attempts');
 
     const modalBackdrop = document.getElementById('modalBackdrop');
     const modalAddress  = document.getElementById('modalAddress');
@@ -166,16 +157,18 @@ From roaring twenties to icy snow?
     let attempts = 0;
     let lastFocus = null;
 
+    // Robust normalization: lower-case, trim, collapse multiple spaces, remove punctuation
     function normalize(str) {
       return (str || '')
         .toLowerCase()
         .trim()
-        .replace(/[^\p{L}\p{N}\s-]/gu, ''); // remove punctuation safely (unicode-aware)
+        .replace(/\s+/g, ' ')
+        .replace(/[^\p{L}\p{N}\s]/gu, ''); // remove punctuation incl. accents if separate
     }
 
     function openModal(addressText) {
       modalAddress.textContent = addressText;
-      modalBackdrop.classList.add('modal-show');
+      modalBackdrop.classList.add('show'); // ensure matches CSS class name
       lastFocus = document.activeElement;
       modalCloseBtn.focus();
 
@@ -184,10 +177,10 @@ From roaring twenties to icy snow?
     }
 
     function closeModal() {
-      modalBackdrop.classList.remove('modal-show');
+      modalBackdrop.classList.remove('show');
       modalBackdrop.removeEventListener('click', backdropHandler);
       document.removeEventListener('keydown', escHandler);
-      if (lastFocus) { lastFocus.focus(); }
+      if (lastFocus) lastFocus.focus();
     }
 
     function backdropHandler(e) {
@@ -202,6 +195,7 @@ From roaring twenties to icy snow?
 
     function checkAnswer() {
       const user = normalize(answerInput.value);
+      console.log('Normalized answer:', user); // helpful for debugging
       attempts++;
       attemptsEl.textContent = attempts;
 
@@ -225,9 +219,9 @@ From roaring twenties to icy snow?
       }
     }
 
-    // Allow Enter key
+    // Submit on Enter
     answerInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { checkAnswer(); }
+      if (e.key === 'Enter') checkAnswer();
     });
     submitBtn.addEventListener('click', checkAnswer);
   </script>
