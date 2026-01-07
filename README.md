@@ -140,7 +140,7 @@ From roaring twenties to icy snow?
       "Hint #3: Shares a name with a Renaissance painter."
     ];
     const HINT_AFTER_ATTEMPTS = 3;
-    const ADDRESS_TEXT = "123 Example Street, Maddington WA 6109"; // <- change this
+    const ADDRESS_TEXT = "43 Nannatee Way, Wanneroo"; // <- change this
 
     // === Elements ===
     const answerInput = document.getElementById('answer');
