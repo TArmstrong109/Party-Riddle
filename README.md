@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -140,7 +141,9 @@ From roaring twenties to icy snow?
       "Hint #3: Shares a name with a Renaissance painter."
     ];
     const HINT_AFTER_ATTEMPTS = 3;
-    const ADDRESS_TEXT = "43 Nannatee Way, Wanneroo"; // <- change this
+
+    // ✅ Updated address
+    const ADDRESS_TEXT = "43 Nannatee Way, Wanneroo";
 
     // === Elements ===
     const answerInput = document.getElementById('answer');
@@ -157,18 +160,18 @@ From roaring twenties to icy snow?
     let attempts = 0;
     let lastFocus = null;
 
-    // Robust normalization: lower-case, trim, collapse multiple spaces, remove punctuation
+    // Robust normalization: lower-case, trim, collapse spaces, remove punctuation
     function normalize(str) {
       return (str || '')
         .toLowerCase()
         .trim()
         .replace(/\s+/g, ' ')
-        .replace(/[^\p{L}\p{N}\s]/gu, ''); // remove punctuation incl. accents if separate
+        .replace(/[^\p{L}\p{N}\s]/gu, ''); // remove punctuation safely
     }
 
     function openModal(addressText) {
       modalAddress.textContent = addressText;
-      modalBackdrop.classList.add('show'); // ensure matches CSS class name
+      modalBackdrop.classList.add('show');
       lastFocus = document.activeElement;
       modalCloseBtn.focus();
 
@@ -195,7 +198,6 @@ From roaring twenties to icy snow?
 
     function checkAnswer() {
       const user = normalize(answerInput.value);
-      console.log('Normalized answer:', user); // helpful for debugging
       attempts++;
       attemptsEl.textContent = attempts;
 
