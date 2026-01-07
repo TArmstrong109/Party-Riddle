@@ -14,13 +14,14 @@
       min-height: 100vh; background: #0f172a; color: #e2e8f0;
     }
     .card {
-      max-width: 680px; width: 100%;
+      max-width: 780px; width: 100%;
       background: #111827; border: 1px solid #1f2937; border-radius: 12px;
       padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
     h1 { margin: 0 0 0.5rem; font-weight: 700; font-size: 1.5rem; }
     .sub { color: #94a3b8; margin-bottom: 1rem; }
     .riddle {
+      white-space: pre-line;
       background: #0b1020; border: 1px solid #1f2937; border-radius: 10px;
       padding: 1rem; line-height: 1.6; margin-bottom: 1rem; color: #cbd5e1;
     }
@@ -50,7 +51,7 @@
       z-index: 1000;
     }
     .modal {
-      width: min(92vw, 520px);
+      width: min(92vw, 560px);
       background: #111827; border: 1px solid #1f2937; border-radius: 12px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.45);
       padding: 1.25rem;
@@ -82,7 +83,20 @@
     <p class="sub">Answer correctly to reveal the destination in a pop‑up.</p>
 
     <div class="riddle" id="riddleText">
-      I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?
+I’ve chased a light across a bay,
+In gilded halls where secrets sway.
+I’ve frozen deep where lovers weep,
+Beneath the waves where dreams don’t keep.
+
+I’ve wandered lands both harsh and wild,
+With nature’s wrath and fate reviled.
+I’ve built a world inside a dream,
+Where time is fluid, not what it seems.
+
+My name’s a blend of art and lore,
+A painter’s touch, an actor’s core.
+Who am I, whose fame does grow,
+From roaring twenties to icy snow?
     </div>
 
     <label for="answer">Your answer</label>
@@ -117,15 +131,24 @@
   <script>
     // === Configuration ===
     const ACCEPTED_ANSWERS = [
-      "echo",
-      "an echo",
-      "the echo"
+      // Primary full name
+      "leonardo dicaprio",
+      // Common variants
+      "leo dicaprio",
+      "leonardo wilhelm dicaprio",
+      "dicaprio",
+      "leonardo",
+      // With punctuation variants (normalized away)
+      "leonardo di caprio"
     ];
     const HINTS = [
-      "Hint #1: You hear it in caves.",
-      "Hint #2: It repeats what you say."
+      "Hint #1: Think of a green light across the bay in the Roaring Twenties.",
+      "Hint #2: He froze in icy waters and fought through brutal wilderness.",
+      "Hint #3: His first name matches a Renaissance painter."
     ];
-    const HINT_AFTER_ATTEMPTS = 3;
+    const HINT_AFTER_ATTEMPTS = 3; // show hints after this many wrong tries
+
+    // 🏁 Replace this with your real address
     const ADDRESS_TEXT = "123 Example Street, Maddington WA 6109";
 
     // === Elements ===
@@ -151,17 +174,12 @@
     }
 
     function openModal(addressText) {
-      // Set address text
       modalAddress.textContent = addressText;
-      // Show modal
       modalBackdrop.classList.add('modal-show');
-      // Basic focus management
       lastFocus = document.activeElement;
       modalCloseBtn.focus();
 
-      // Close when clicking outside the dialog
       modalBackdrop.addEventListener('click', backdropHandler);
-      // Close on Esc
       document.addEventListener('keydown', escHandler);
     }
 
@@ -173,7 +191,6 @@
     }
 
     function backdropHandler(e) {
-      // If user clicked directly on the backdrop (not inside modal box), close
       if (e.target === modalBackdrop) closeModal();
     }
     function escHandler(e) {
@@ -200,7 +217,6 @@
       } else {
         feedback.textContent = "Not quite. Try again!";
         feedback.className = "msg error";
-        // Progressive hints
         if (attempts >= HINT_AFTER_ATTEMPTS) {
           const hintIndex = Math.min(attempts - HINT_AFTER_ATTEMPTS, HINTS.length - 1);
           hintBox.textContent = HINTS[hintIndex];
